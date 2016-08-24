@@ -1,0 +1,13 @@
+{
+    "configs": [
+        {
+            "method": "aes-256-cfb",
+            "password": "NzFiZTZjNW",
+            "remarks": "banwagong",
+            "server": "104.224.131.79",
+            "server_port": 443
+        }
+    ],
+    "localPort": 1080,
+    "shareOverLan": false
+}
