@@ -500,6 +500,10 @@ Bundle 'taglist.vim'
 "高亮
 Bundle 'mbriggs/mark.vim' 
 
+"在命令行模式使用grep命令，:Grep                                                                                                                                                                        
+Bundle 'vim-scripts/grep.vim'
+
+
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
