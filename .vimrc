@@ -495,9 +495,10 @@ Bundle 'tacahiroy/ctrlp-funky'
 "智能补全
 " Bundle 'Valloric/YouCompleteMe'
 
-
 Bundle 'taglist.vim'
 
+"高亮
+Bundle 'mbriggs/mark.vim' 
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
