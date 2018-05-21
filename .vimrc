@@ -284,6 +284,9 @@ filetype plugin indent on     "打开文件类型检测, 加了这句才可以�
 set completeopt=longest,menu  "关掉智能补全时的预览窗口
 " 在插入模式下,将光标放在'->'符号后面, 按下"Ctrl+X Ctrl+O", 此时会弹出一个下列菜单, 显示所有匹配的标签,
 
+" (6) help doc 
+" gs add 2016-1-4 set vim chinese, VIM中文帮助文档
+set helplang=cn
 " vim不要自动添加新的注释行
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
@@ -291,63 +294,64 @@ autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 set autoread
 
 
-" gs add 2016-1-4 set vim chinese, VIM中文帮助文档
-set helplang=cn
-
-
-
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "  新文件标题
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"新建.c,.h,.sh,.java文件，自动插入文件头 
-autocmd BufNewFile *.cpp,*.[ch],*.sh,*.rb,*.java,*.py exec ":call SetTitle()" 
-""定义函数SetTitle，自动插入文件头 
+"新建.c,.h,.sh,文件，自动插入文件头 
+autocmd BufNewFile *.cpp,*.[ch],*.sh,Makefile,*.py,*.java exec ":call SetTitle()" 
+
+func! SetComment()  
+    call setline(1, "/*************************************************************************") 
+    call append(line("."), "	> File Name: ".expand("%")) 
+    call append(line(".")+1, "	> Author: gongshuang") 
+    call append(line(".")+2, "	> Mail: baidng@163.com") 
+    call append(line(".")+3, "	> Created Time: ".strftime("%Y-%m-%d %H:%M:%S")) 
+    call append(line(".")+4, " ************************************************************************/") 
+    call append(line(".")+5, "")
+endfunc
+
+func! SetComment_sh()  
+    call setline(3, "#*************************************************************************") 
+    call setline(4, "#  > File Name: ".expand("%")) 
+    call setline(5, "#  > Author: gongshuang") 
+    call setline(6, "#	> Mail: baidng@163.com") 
+    call setline(7, "#	> Created Time: ".strftime("%Y-%m-%d %H:%M:%S")) 
+    call setline(8, "#************************************************************************") 
+    call setline(9, "")
+endfunc
+
+
+"定义函数SetTitle，自动插入文件头 
 func! SetTitle() 
-	"如果文件类型为.sh文件 
-	if &filetype == 'sh' 
-		call setline(1,"\#!/bin/bash") 
-		call append(line("."), "") 
-    elseif &filetype == 'python'
-        call setline(1,"#!/usr/bin/env python")
-        call append(line("."),"# coding=utf-8")
-	    call append(line(".")+1, "") 
-
-    elseif &filetype == 'ruby'
-        call setline(1,"#!/usr/bin/env ruby")
-        call append(line("."),"# encoding: utf-8")
-	    call append(line(".")+1, "")
-
-"    elseif &filetype == 'mkd'
-"        call setline(1,"<head><meta charset=\"UTF-8\"></head>")
-	else 
-		call setline(1, "/*************************************************************************") 
-		call append(line("."), "	> File Name: ".expand("%")) 
-		call append(line(".")+1, "	> Author: gongshuang") 
-		call append(line(".")+2, "	> Mail: shuang.gong@pactera.com") 
-		call append(line(".")+3, "	> Created Time: ".strftime("%Y-%m-%d %H:%M:%S")) 
-		call append(line(".")+4, " ************************************************************************/") 
-		call append(line(".")+5, "")
-	endif
-	if expand("%:e") == 'cpp'
-		call append(line(".")+6, "#include<iostream>")
-		call append(line(".")+7, "using namespace std;")
-		call append(line(".")+8, "")
-	endif
-	if &filetype == 'c'
-		call append(line(".")+6, "#include<stdio.h>")
-		call append(line(".")+7, "")
-	endif
-	if expand("%:e") == 'h'
-		call append(line(".")+6, "#ifndef _".toupper(expand("%:r"))."_H")
-		call append(line(".")+7, "#define _".toupper(expand("%:r"))."_H")
-		call append(line(".")+8, "#endif")
-	endif
-	if &filetype == 'java'
-		call append(line(".")+6,"public class ".expand("%:r"))
-		call append(line(".")+7,"")
-	endif
-	"新建文件后，自动定位到文件末尾
+    if expand("%") == 'Makefile'   
+        call setline(1,"")   
+        call setline(2,"")  
+        call SetComment_sh()  
+    elseif expand("%:e") == 'sh'   
+        call setline(1,"#!/bin/bash")   
+        call setline(2,"")  
+        call SetComment_sh()  
+    elseif expand("%:e") == 'cpp'
+        call SetComment()  
+        call append(line(".")+6, "#include<iostream>")
+        call append(line(".")+7, "using namespace std;")
+        call append(line(".")+8, "")
+    elseif expand("%:e") == 'c'
+        call SetComment()  
+        call append(line(".")+6, "#include<stdio.h>")
+        call append(line(".")+7, "")
+    elseif expand("%:e") == 'h'
+        call SetComment()  
+        call append(line(".")+6, "#ifndef _".toupper(expand("%:r"))."_H")
+        call append(line(".")+7, "#define _".toupper(expand("%:r"))."_H")
+        call append(line(".")+8, "#endif")
+    elseif expand("%:e") == 'py'
+        call SetComment_sh()  
+        call append(line(".")+6, "#ifndef _".toupper(expand("%:r"))."_H")
+        call append(line(".")+7, "#define _".toupper(expand("%:r"))."_H")
+        call append(line(".")+8, "#endif")
+    endif
+    "新建文件后，自动定位到文件末尾
 endfunc 
 autocmd BufNewFile * normal G
 
@@ -358,20 +362,20 @@ autocmd BufNewFile * normal G
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 map <F10> :call CompileRunGcc()<CR>
 func! CompileRunGcc()
-	exec "w"
-	if &filetype == 'c'
-		exec "!g++ % -o %<"
-		exec "!time ./%<"
-	elseif &filetype == 'cpp'
-		exec "!g++ % -o %<"
-		exec "!time ./%<"
-	elseif &filetype == 'java' 
-		exec "!javac %" 
-		exec "!time java %<"
-	elseif &filetype == 'sh'
-		:!time bash %
-	elseif &filetype == 'python'
-		exec "!time python2.7 %"
+    exec "w"
+    if &filetype == 'c'
+        exec "!g++ % -o %<"
+        exec "!time ./%<"
+    elseif &filetype == 'cpp'
+        exec "!g++ % -o %<"
+        exec "!time ./%<"
+    elseif &filetype == 'java' 
+        exec "!javac %" 
+        exec "!time java %<"
+    elseif &filetype == 'sh'
+        :!time bash %
+    elseif &filetype == 'python'
+        exec "!time python2.7 %"
     elseif &filetype == 'html'
         exec "!firefox % &"
     elseif &filetype == 'go'
@@ -380,14 +384,14 @@ func! CompileRunGcc()
     elseif &filetype == 'mkd'
         exec "!~/.vim/markdown.pl % > %.html &"
         exec "!firefox %.html &"
-	endif
+    endif
 endfunc
 "C,C++的调试
 map <C-F10> :call Rungdb()<CR>
 func! Rungdb()
-	exec "w"
-	exec "!g++ % -g -o %<"
-	exec "!gdb ./%<"
+    exec "w"
+    exec "!g++ % -g -o %<"
+    exec "!gdb ./%<"
 endfunc
 
 
@@ -495,13 +499,21 @@ Bundle 'tacahiroy/ctrlp-funky'
 "智能补全
 " Bundle 'Valloric/YouCompleteMe'
 
+"查找, F7
+Plugin 'vim-scripts/grep.vim'
+
+"function list, F4 
 Bundle 'taglist.vim'
 
-"高亮
-Bundle 'mbriggs/mark.vim' 
 
-"在命令行模式使用grep命令，:Grep                                                                                                                                                                        
-Bundle 'vim-scripts/grep.vim'
+" :A<CR>   .c -> .h
+Bundle 'a.vim'
+
+"高亮 /m /n
+Bundle 'mbriggs/mark.vim'
+
+
+
 
 
 " All of your Plugins must be added before the following line
@@ -520,6 +532,10 @@ filetype plugin indent on    " required
 " Put your non-Plugin stuff after this line
 
 
+"""""""""""""""""""""""""""""""""""""""
+" (0) a.vim 
+"""""""""""""""""""""""""""""""""""""""
+" 在vim下输入 ：A 跳转到同名的 .h 头文件之中
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 " (1) ctags 
@@ -528,6 +544,34 @@ filetype plugin indent on    " required
 set autochdir   
 " 让vim在每次启动的时候自动找到这tags了
 set tags+=tags;
+" 将c语言的头文件加进去
+" 需要在串口下执行这个命令：
+" ctags -R --c++-kinds=+px --fields=+aiKzn --extra=+q --if0=yes -f ~/.vim/systags /usr/include/
+set tags+=~/.vim/systags
+
+"更新ctags，找寻父文件夹原有tags文件
+function! UpdateCtags()
+    let curdir=getcwd()
+    while !filereadable("./tags")
+        cd ..
+        if getcwd() == "/"
+            break
+        endif
+    endwhile
+    echo getcwd()
+    if filewritable("./tags")
+        "!ctags -R --c++-types=+px --excmd=pattern --exclude=Makefile --exclude=.
+        !ctags -R  --c++-kinds=+px --fields=+aiKzn --extra=+q --if0=yes
+        TlistUpdate
+    endif
+    execute ":cd " . curdir
+endfunction
+
+"映射键盘上的F12对应更新tags
+map <F12> :call UpdateCtags()<CR>
+
+"也可以在vim保存文件时自动更新：
+"silent autocmd BufWritePost *.c,*.h call UpdateCtags()
 
 """""""""""""""""""""""""""""""""""""""""""""
 " (2) NERDTree  ----->F3
@@ -549,14 +593,15 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 " (3) TagList  --->  F4 显示变量
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 nmap <silent> <F4> <ESC>:Tlist<RETURN>
-let Tlist_Sort_Type = "name"    " 按照名称排序  
+"let Tlist_Sort_Type = "name"    " 按照名称排序,or先后顺序排序
 let Tlist_Use_Right_Window = 1  " 在右侧显示窗口  
 let Tlist_Compart_Format = 1    " 压缩方式  
-let Tlist_Exist_OnlyWindow = 1  " 如果只有一个buffer，kill窗口也kill掉buffer  
+let Tlist_Exist_OnlyWindow = 1  "如果taglist窗口是最后一个窗口时,退出VIM
 "let Tlist_File_Fold_Auto_Close = 0  " 不要关闭其他文件的tags  
 "let Tlist_Enable_Fold_Column = 0    " 不要显示折叠树  
 let Tlist_Show_One_File=1            "不同时显示多个文件的tag，只显示当前文件的
 let Tlist_WinWidth=30        "设置taglist宽度
+"let Tlist_Auto_Open=1        "启动VIM后，自动打开taglist窗口
 
 
 
@@ -568,18 +613,18 @@ let Tlist_WinWidth=30        "设置taglist宽度
 """""""""""""""""""""""""""""""""""""""""""""""""""""""      
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 if has("cscope")    
-    set csprg=/usr/local/bin/cscope            "指定用来执行 cscope 的命令。缺省值是 cscope
+    set csprg=/usr/bin/cscope                  "指定用来执行 cscope 的命令。缺省值是 cscope
     set csto=0                                 "如果 'csto' 被设为 1，标签文件会在 cscope 数据库之前被搜索
     set cst                                    "设定 'cst' 选项意味着你总同时搜索 cscope 数据库和 标签文件
     set nocsverb    
     " add any database in current directory     
     if filereadable("cscope.out")   
-       "加上路径,是为了对多级目录有效
-       cs add $PWD/cscope.out $PWD
-       "cs add cscope.out 
-   	" else add database pointed to by environment
-	elseif $CSCOPE_DB != ""
-       cs add $CSCOPE_DB
+        "加上路径,是为了对多级目录有效
+        cs add $PWD/cscope.out $PWD
+        "cs add cscope.out 
+        " else add database pointed to by environment
+    elseif $CSCOPE_DB != ""
+        cs add $CSCOPE_DB
     endif   
     set csverb    
 endif
@@ -713,7 +758,6 @@ let g:ycm_filetype_whitelist = {'c' : 1, 'cpp' : 1, 'java' : 1, 'python' : 1}
 
 " 输入第2个字符开始补全
 let g:ycm_min_num_of_chars_for_completion=2
-
 
 
 
