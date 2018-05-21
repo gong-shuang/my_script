@@ -310,27 +310,26 @@ func! SetComment()
     call append(line(".")+5, "")
 endfunc
 
-func! SetComment_sh()  
-    call setline(3, "#*************************************************************************") 
-    call setline(4, "#  > File Name: ".expand("%")) 
-    call setline(5, "#  > Author: gongshuang") 
-    call setline(6, "#	> Mail: baidng@163.com") 
-    call setline(7, "#	> Created Time: ".strftime("%Y-%m-%d %H:%M:%S")) 
-    call setline(8, "#************************************************************************") 
-    call setline(9, "")
+func! SetComment_sh(line) 
+    let ss = a:line  
+    call setline(ss, "#########################################################################") 
+    call setline(ss+1, "#  > File Name: ".expand("%")) 
+    call setline(ss+2, "#  > Author: gongshuang") 
+    call setline(ss+3, "#	> Mail: baidng@163.com") 
+    call setline(ss+4, "#	> Created Time: ".strftime("%Y-%m-%d %H:%M:%S")) 
+    call setline(ss+5, "#########################################################################") 
+    call setline(ss+6, "")
 endfunc
 
 
 "定义函数SetTitle，自动插入文件头 
 func! SetTitle() 
     if expand("%") == 'Makefile'   
-        call setline(1,"")   
-        call setline(2,"")  
-        call SetComment_sh()  
+        call SetComment_sh(1)  
     elseif expand("%:e") == 'sh'   
         call setline(1,"#!/bin/bash")   
         call setline(2,"")  
-        call SetComment_sh()  
+        call SetComment_sh(3)  
     elseif expand("%:e") == 'cpp'
         call SetComment()  
         call append(line(".")+6, "#include<iostream>")
@@ -346,13 +345,10 @@ func! SetTitle()
         call append(line(".")+7, "#define _".toupper(expand("%:r"))."_H")
         call append(line(".")+8, "#endif")
     elseif expand("%:e") == 'py'
-        call SetComment_sh()  
-        call append(line(".")+6, "#ifndef _".toupper(expand("%:r"))."_H")
-        call append(line(".")+7, "#define _".toupper(expand("%:r"))."_H")
-        call append(line(".")+8, "#endif")
+        call SetComment_sh(1)  
     endif
     "新建文件后，自动定位到文件末尾
-endfunc 
+endfunc
 autocmd BufNewFile * normal G
 
 
