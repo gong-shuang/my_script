@@ -294,6 +294,14 @@ autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 set autoread
 
 
+
+ """"""""""""""""""""""支持中文 gbk
+set fileencodings=utf-8,gb2312,gbk,gb18030                                  
+set termencoding=utf-8
+
+
+
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "  新文件标题
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
